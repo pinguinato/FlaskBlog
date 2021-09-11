@@ -11,4 +11,7 @@ def homepage():
 
     return render_template("homepage.html", posts=posts, boolean_flag=some_boolean_flag)
 
+@app.route('/about')
+def about_page():
+    return render_template("about_page.html")
 
