@@ -1,7 +1,8 @@
 from blog import app
+from flask import render_template
 
 @app.route('/')
 def homepage():
-    return "<h1>Homepage</h1>"
+    return render_template("homepage.html")
 
 

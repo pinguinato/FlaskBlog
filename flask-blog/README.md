@@ -82,4 +82,8 @@ scriviamo i nomi delle nostre variabili di ambiente:
                 FLASK_APP=run.py
                 FLASK_ENV=development
 
+In questo modo non dobbiamo ogni volta risettarle.
+
+
+
 
