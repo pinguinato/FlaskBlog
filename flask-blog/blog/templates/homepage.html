@@ -7,7 +7,7 @@
     <div class="row no-gutters">
         <div class="col-md-9 order-md-2">
         {% for post in posts %}
-        <div>
+        <div class="single-post-home">
             <h5>{{ post.title }}</h5>
             <p>{{ post.body }}</p>
         </div>    
@@ -15,7 +15,7 @@
         </div>
     
         <div class="col-md-3 order-md-1">
-            <p>Some Content</p>
+            {% include "about_me_snippet.html" %}
         </div>
     </div>
     
