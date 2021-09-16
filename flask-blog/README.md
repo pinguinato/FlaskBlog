@@ -84,6 +84,24 @@ scriviamo i nomi delle nostre variabili di ambiente:
 
 In questo modo non dobbiamo ogni volta risettarle.
 
+## Database e Flask
 
+### Flask SQLAlchemy (ORM = Obejct Relational Mapping)
 
+Estensione di Flask che permette di usare comodamente SQLAlchemy un ORM molto famoso per Python. SQLAlchemy permette 
+la gestione del database tramite entità di alto livello come le Classi, Oggetti e Metodi invece che tabelle dei DB. Offre una astrazione che ci permette di interigire con i Database tramite Python. SQLAlchemy supporta tutti i principali DB relazionali come PostGre, SQLite e MySql.
+
+### Flask Migrate
+
+Estensione che permette di gestire facilmente i cambiamenti dello schema del DB.
+
+### Installazione Pacchetti
+
+                pip install flask-sqlalchemy
+
+                pip list
+
+                pip freeze > requirements.txt
+
+                pip install flask-migrate
 
