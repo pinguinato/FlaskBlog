@@ -274,3 +274,9 @@ Refactoring per evitare di importare in flask shell tutte le volte i moduli del 
                 [User('1', '2021-09-18 12:18:43.640810', 'test', 'email@test.com')]
 
 I dati ci vengono ritornati senza dover prima andar a fare gli import dei moduli!!
+
+Altri usi della flask shell con le query:
+
+                Post.query.filter(User.username=="test").all()
+                <console>:1: SAWarning: SELECT statement has a cartesian product between FROM element(s) "post" and FROM element "user".  Apply join condition(s) between each element to resolve.
+                [User('1', '1', '2021-09-18 12:22:00.664872', 'Primo Post', 'None', 'Lorem Ipsum dolor sin amet some random content'), User('2', '1', '2021-09-18 14:10:45.584596', 'Secondo Post', 'None', 'Body del secondo post ...')]
