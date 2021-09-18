@@ -192,3 +192,85 @@ Creiamo anche una istanza di Post:
                 >>> p = Post(title="Primo Post", body="Lorem Ipsum dolor sin amet some random content", author=u)
                 >>> db.session.add(p)
                 >>> db.session.commit()
+
+### Implementazione di un sistema di password hashing (sicreuzza dell'aopplicazione)
+
+- Avvio di una flask shell e import del modulo db e dei modelli creati in precedenza:
+
+                flask shell
+
+                from blog import db
+                from blog.models import User, Post
+
+- Operazioni da shell direttamente sul DB:
+
+                >>> Post.query.all()
+                [<Post 1>]
+
+                >>> User.query.all()
+                [<User 1>
+
+                >>> u = User.query.get(1)
+                >>> print(u)
+                <User 1>
+                >>> u   
+                <User 1>
+                >>> u.email
+                'email@test.com'
+                >>> u.username
+                'test'
+                >>> p = Post(title="Secondo Post", body="Body del secondo post ...", author=u)
+                >>> db.session.add(p)
+                >>> db.session.commit()
+                >>> Post.query.all()
+                [<Post 1>, <Post 2>]
+
+**Importante**
+
+Nell'uso di un ORM, cosi come anche in Django (object), la parola **query** nel comando indica che vogliamo eseguire una query sul database.
+
+#### Come migliorare la rappresentazione in shell delle singole istanze 
+
+Da come si vede quando stampiamo i record nella flask shell, non e' di grande aiuto avere listate le istanze cosi':
+
+                [<Post 1>, <Post 2>]
+
+Per far si che possiamo ritornare il contenuto delle singole istanze dobbiamo andare ad aggiungere un importante metodo speciale nei singoli modelli che abbiamo definito per il database del nostro progetto:
+
+                def __repr__(self):
+                        return f"User('{ self.id }', '{ self.created_at }', '{ self.username }', '{ self.email }')"
+
+Questo metodo speciale ha la caratteristica di esplicitare i campi dell'istanza memorizzata a database!!
+
+Es.
+
+                $ flask shell
+                c:\progetti\python-flask\flaskblog\flask-blog\venv\lib\site-packages\flask_sqlalchemy\__init__.py:872: FSADeprecationWarning:           SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True or False to suppress            this warning.
+                  warnings.warn(FSADeprecationWarning(
+                Python 3.8.6 (tags/v3.8.6:db45529, Sep 23 2020, 15:52:53) [MSC v.1927 64 bit (AMD64)] on win32
+                App: blog [development]
+                Instance: C:\progetti\python-flask\FlaskBlog\flask-blog\instance
+                >>> from blog import db
+                >>> from blog.models import User, Post
+                >>> Post.query.all()
+                [User('1', '1', '2021-09-18 12:22:00.664872', 'Primo Post', 'None', 'Lorem Ipsum dolor sin amet some random content'), User('2', '1',           '2021-09-18 14:10:45.584596', 'Secondo Post', 'None', 'Body del secondo post ...')]
+
+**Importante**
+
+Refactoring per evitare di importare in flask shell tutte le volte i moduli del progetto:
+
+- editiamo il file run.py in questo modo:
+
+                from blog import app, db
+                from blog.models import User, Post
+
+                @app.shell_context_processor
+                def make_shell_context():
+                        return {'db': db, 'User': User, 'Post': Post}
+
+- riavviamo a questo punto la flask shell:
+
+                >>> User.query.all()
+                [User('1', '2021-09-18 12:18:43.640810', 'test', 'email@test.com')]
+
+I dati ci vengono ritornati senza dover prima andar a fare gli import dei moduli!!

@@ -14,6 +14,11 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     posts = db.relationship('Post', backref="author", lazy="dynamic")
 
+
+    def __repr__(self):
+        return f"User('{ self.id }', '{ self.created_at }', '{ self.username }', '{ self.email }')"
+
+
 # user_id e un campo di tipo chiave esterna -> per ogni posdt ci sta un utente associato
 class Post(db.Model):
     __tablename__ = "post"
@@ -23,3 +28,8 @@ class Post(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255))
     body = db.Column(db.Text(), nullable=False)
+
+
+    def __repr__(self):
+        return f"User('{ self.id }', '{ self.user_id }', '{ self.created_at }', '{ self.title }', '{ self.description }', '{ self.body }')"
+
