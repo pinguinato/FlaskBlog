@@ -6,6 +6,7 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -21,4 +22,5 @@ with app.app_context():
 # TODO: qui dentro andiamo ad inizializzare il db ecc...le view saranno contenuto all'interno di routes.py
 
 # è molto importante scrivere qui al fondo questo import per prevenire errore di Circular Import
+from blog import models
 from blog import routes
