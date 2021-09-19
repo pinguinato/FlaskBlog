@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from blog import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 #questa classe estende db.Model e rappresenta le colonne nel nostro database
 # il campo posts e cio che viene definito campo relazionale, non sta di fatto nella tabella ma ci permette di filtrare i dati
@@ -18,6 +19,14 @@ class User(db.Model):
     def __repr__(self):
         return f"User('{ self.id }', '{ self.created_at }', '{ self.username }', '{ self.email }')"
 
+    
+    def set_password_hash(self, password):
+        self.password = generate_password_hash(password)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
 
 # user_id e un campo di tipo chiave esterna -> per ogni posdt ci sta un utente associato
 class Post(db.Model):
@@ -31,5 +40,5 @@ class Post(db.Model):
 
 
     def __repr__(self):
-        return f"User('{ self.id }', '{ self.user_id }', '{ self.created_at }', '{ self.title }', '{ self.description }', '{ self.body }')"
+        return f"Post('{ self.id }', '{ self.user_id }', '{ self.created_at }', '{ self.title }', '{ self.description }', '{ self.body }')"
 

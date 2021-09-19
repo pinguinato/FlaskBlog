@@ -275,8 +275,71 @@ Refactoring per evitare di importare in flask shell tutte le volte i moduli del 
 
 I dati ci vengono ritornati senza dover prima andar a fare gli import dei moduli!!
 
-Altri usi della flask shell con le query:
+Altri usi della flask shell con le query (uso di **filter**):
 
                 Post.query.filter(User.username=="test").all()
                 <console>:1: SAWarning: SELECT statement has a cartesian product between FROM element(s) "post" and FROM element "user".  Apply join condition(s) between each element to resolve.
                 [User('1', '1', '2021-09-18 12:22:00.664872', 'Primo Post', 'None', 'Lorem Ipsum dolor sin amet some random content'), User('2', '1', '2021-09-18 14:10:45.584596', 'Secondo Post', 'None', 'Body del secondo post ...')]
+
+Altri usi della flask shell con le query (uso di **filter_by**)
+
+                >>> User.query.filter_by(username="test").all()       
+                [User('1', '2021-09-18 12:18:43.640810', 'test', 'email@test.com')]
+
+Filter_by e' un po' piu' semplice da usare. 
+
+Aggiornamento di un titolo di un post da shell:
+
+                >>> p = Post.query.first()
+                >>> p
+                Post('1', '1', '2021-09-18 12:22:00.664872', 'Primo Post', 'None', 'Lorem Ipsum dolor sin amet some random content')
+
+                >>> p.title = "Titolo Aggiornato"
+                >>> db.session.commit()
+                >>> p
+                Post('1', '1', '2021-09-18 12:22:00.664872', 'Titolo Aggiornato', 'None', 'Lorem Ipsum dolor sin amet some random content')
+
+Cancellazione dei Post (esempio da shell):
+
+                >>> Post.query.all()
+                [Post('1', '1', '2021-09-18 12:22:00.664872', 'Titolo Aggiornato', 'None', 'Lorem Ipsum dolor sin amet some random content'), Post('2', '1', '2021-09-18 14:10:45.584596', 'Secondo Post', 'None', 'Body del secondo post ...')]
+                >>> p = Post.query.first()
+                >>> p
+                Post('1', '1', '2021-09-18 12:22:00.664872', 'Titolo Aggiornato', 'None', 'Lorem Ipsum dolor sin amet some random content')
+                >>> db.session.delete(p)
+                >>> db.session.commit()
+                >>> Post.query.all()
+                [Post('2', '1', '2021-09-18 14:10:45.584596', 'Secondo Post', 'None', 'Body del secondo post ...')]
+
+## Hashing delle Password
+
+Potrebbe servirci per alzare il livello di protezione del nostro database. Per effettuare cio' ci conviene andare a definire dei nuovi metodi nelle nostre classi di Modello. Questi metodi oscureranno le noster password e si serviranno di metodi e funzioni del core di Flask(Werzeug). Nel progetto Flask Market ho usato invece Flask Bcrypt, che e' una estensione di Flask  che usa per lo stesso scopo.
+
+Es.
+
+- importiamo i pacchetti ncessari:
+
+                from werkzeug.security import generate_password_hash, check_password_hash
+
+- dentro la classe User:
+
+                def set_password_hash(self, password):
+                        self.password = generate_password_hash(password)
+
+                def check_password(self, password):
+                        return check_password_hash(self.password, password)
+
+- esempio di utilizzo(sempre da shell flask):
+
+                >>> u = User.query.first()
+                >>> u
+                User('1', '2021-09-18 12:18:43.640810', 'test', 'email@test.com')
+                >>> u.password
+                'password'
+                >>> u.set_password_hash(u.password)
+                >>> u.password
+                'pbkdf2:sha256:260000$8vesm46JYIkUeWkQ$5a1f5b408e2c39e5b509f4d7e6d6a9a27ef6159a84e5e248c4cb3bb47d09a292'
+
+                >>> u.check_password('password')
+                True
+
