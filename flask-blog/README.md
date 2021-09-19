@@ -343,3 +343,15 @@ Es.
                 >>> u.check_password('password')
                 True
 
+## Far arrivare i post dal database alla pagina web
+
+Modifichiamo il file delle rotte in questo modo:
+
+from blog.models import Post
+
+
+                @app.route('/')
+                def homepage():
+                        # i post sono ordinati per data di creazione decrescente                        
+                        posts = Post.query.order_by(Post.created_at.desc()).all()
+                        return render_template("homepage.html", posts=posts)
