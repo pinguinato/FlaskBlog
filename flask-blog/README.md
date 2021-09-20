@@ -355,3 +355,19 @@ from blog.models import Post
                         # i post sono ordinati per data di creazione decrescente                        
                         posts = Post.query.order_by(Post.created_at.desc()).all()
                         return render_template("homepage.html", posts=posts)
+
+## Come renderizzare singoli Post del nostro blog
+
+- ci serve una nuova funzione **routes**
+- ci serv un nuovo file dentro **/templates**
+
+Es. la nuova rotta (dove passiamo come parametro l'id del singolo Post)
+
+
+                @app.route('/posts/<int:post_id>')
+                def post_details(post_id):
+                        post_instance = Post.query.get_or_404(post_id)
+                        return render_template("post_details.html", post=post_instance)
+
+
+**Importante**: l'id viene passato come intero, specifichiamo il tipo, inoltre usiamo il metodo **get_or_404()** che ci permette in caso di chiamata di ID che non esiste a db di restituire automaticamente un 404 invece di un None type. 
