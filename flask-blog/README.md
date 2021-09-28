@@ -359,7 +359,7 @@ from blog.models import Post
 ## Come renderizzare singoli Post del nostro blog
 
 - ci serve una nuova funzione **routes**
-- ci serv un nuovo file dentro **/templates**
+- ci serve un nuovo file dentro **/templates**
 
 Es. la nuova rotta (dove passiamo come parametro l'id del singolo Post)
 
@@ -371,3 +371,20 @@ Es. la nuova rotta (dove passiamo come parametro l'id del singolo Post)
 
 
 **Importante**: l'id viene passato come intero, specifichiamo il tipo, inoltre usiamo il metodo **get_or_404()** che ci permette in caso di chiamata di ID che non esiste a db di restituire automaticamente un 404 invece di un None type. 
+
+## Autenticazioni utenti: LOGIN e LOGOUT in Flask
+
+Si usano 2 estensio di Flask:
+- Flask-Login
+- Flask-WTF
+
+Il primo gestisce le fasi di login e logout degli utenti, mentre il secondo ci permetterà di creare dei form di login necessar in maniera sicura e rapida.
+
+Installiamo le 2 estensioni:
+
+                pip install flask-login
+
+                pip install flask-wtf
+
+                pip freeze > requirements.txt
+
