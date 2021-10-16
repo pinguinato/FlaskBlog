@@ -2,7 +2,7 @@ from blog import app
 from flask import render_template, redirect, flash, url_for
 from flask_login import current_user, login_user, logout_user
 from blog.models import Post, User
-from blog.forms import LoginForm
+from blog.forms import LoginForm, PostForm
 
 
 @app.route('/')

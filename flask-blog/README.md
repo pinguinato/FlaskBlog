@@ -522,3 +522,25 @@ In questo modo creo un nuovo utente in grado di scrivere nuovi posts.
 
 ## Costruire l'interfaccia per la creazione di nuovi posts
 
+Per dare la possibilita' di aggiungere nuovi posts al nostro blog ci serviamo di 2 estensioni di Flask:
+- flask-wtf per costruire il nostro form di inserimento dei nuovi post
+- flask-misaka una estensione nuova che da' supporto markdown per scrivere i nostri nuovi post
+
+Prima di tutto andiamo a definire una nuova classe per il form.
+
+                from wtforms import TextAreaField
+                from wtforms.validators import Length
+
+
+                class PostForm(FlaskForm):
+                        title = StringField('Titolo', validators=[DataRequired("Campo Obbligatorio!"), Length(min=3, max=120, message="Assicurati che il titolo abbia tra i 3 e i 120 caratteri")])
+                        description = TextAreaField('Descrizione', validators=[Length(max=240, message="Assicurati che la descrizione abbia al massimo 240 caratteri")])
+                        body = TextAreaField('Contenuto', validators=[DataRequired("Campo Obbligatorio!")])
+                        submit = SubmitField('Pubblica Post')
+
+Importiamo la nuova classe dentro il file delle rotte:
+
+                from blog.forms import LoginForm, PostForm
+
+Adesso non ci resta che creare una nuova view per la creazione dei posts!
+
