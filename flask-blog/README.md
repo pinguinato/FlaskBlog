@@ -388,3 +388,137 @@ Installiamo le 2 estensioni:
 
                 pip freeze > requirements.txt
 
+Creo una SECRET_KEY:
+
+- creo un file .env che metto nel .gitignore
+- apro un terminale python e immetto i seguenti comandi:
+  
+                import uuid
+
+                print(uuid.uuid4().hex)
+
+Prendo la stringa che compare a terminale e la copio nella SECRET_KEY
+
+La variabile SECRET_KEY serve per la generazione dei token e la messa in sicurezza dell'applicazione.
+
+Il contentu odel file .env non deve essere condiviso!!
+
+Creiamo ora un nuovo file all'interno del package **/blog**. Il file si chiamerà **forms.py**
+
+Il file che abbiamo creato ci serve per implementare il nostro form di login.
+
+## Creazione del form di LOGIN e validazione
+
+Creiamo il file **forms.py** e ci mettiamo questo codice
+
+                from flask_wtf import FlaskForm
+                from wtforms import BooleanField, PasswordField, StringField, SubmitField
+                from wtforms.validators import DataRequired
+
+                class LoginForm(FlaskForm):
+                        username = StringField('Username', validators=[DataRequired()])
+                        password = PasswordField('Password', validators=[DataRequired()])
+                        remember_me = BooleanField('Ricordami')
+                        submit = SubmitField('Login')
+
+A questo punto abbiamo bisogno di un template per redenrizzare questo form di login!! Quindi creiamo un file **login.html** dentro la cartella dei templates, ovvero /templates.
+
+Il codice del file **login.html**:
+
+                {% extends 'base.html' %}
+                {% block title %}Login - Coding Wiz{% endblock %}
+                {% block content %}
+
+                <div class="container text-center mt-3 ">
+                        <h2>Admin Login</h2>
+                                <div class="row no-gutters justify-content-center">
+                                <div class="col-md-4">
+                                        <div class="about-page-block">
+                                                <form method="POST" novalidate>
+                                                {{ form.hidden_tag() }}
+                                                <div class="form-group">
+                                                        {{ form.username.label }}
+                                                        {{ form.username(class="form-control") }}
+                                                </div>
+                                                <div class="form-group">
+                                                        {{ form.password.label }}
+                                                        {{ form.password(class="form-control") }}
+                                                </div>
+                                                <p>
+                                                        {{ form.remenber_me() }} {{ form.remenber_me.label }}
+                                                </p>
+                                                {{ form.submit(class="btn btn-outline-secondary") }}
+                                                </form>
+                                        </div>
+                                </div>
+                                </div>
+    
+                                {% if boolean_flag %}
+                                        <p>Boolean Flag: True</p>
+                                {% endif %}
+                                </div>    
+                                {% endblock %}
+
+**Importante**
+
+                {{ form.hidden_tag() }}
+
+Ci protegge dalla vulnerabilità Cross-site request forgery!! è il token CSRF.
+
+## Settaggio del Login Manager
+
+Dentro il file init.py:
+
+                from flask_login import LoginManager
+
+e poi:
+
+                login_manager = LoginManager(app)
+
+Invece dentro il file **models.py**:
+
+                from blog import login_manager
+                from flask_login import UserMixin
+
+
+                # funzione necessaria affinchè il login manager possa funzionare, così tengo traccia dell'utente connesso
+                @login_manager.user_loader
+                def load_user(id):
+                        return User.query.get(int(id))
+
+Infine andiamo a ritoccare il nostro modello User:
+
+                class User(UserMixin, db.Model):
+
+## Gestione dei messaggi FLASH per i form ddegli utenti
+
+Dobbiamo modificare la pagina del **login.html** inserendo uina nuova classe per il DIV:
+
+
+                <div class="mt-3">
+                {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                                {% for message in messages %}
+                                        <p style="color: #dc3545;">{{ message }}</p>
+                                {% endfor %}
+                        {% endif%}
+                {% endwith %}
+                </div>
+
+In questo modo compariranno i messaggi di errore in caso di errato Login.
+
+## Come si creano nuovi utenti usando la flask shell
+
+Apriamo la flask shell e digitiamo i seguenti comandi da shell:
+
+                >>> u = User(username="admin", email="admin@localhost")
+                >>> u.set_password_hash('string-password')
+                >>> u.password
+                'pbkdf2:sha256:260000$ANakz00Aq5JaVY6I$aac7528fad64b7e685006f2d05523bdc45226836695badef11db66986c9dedc3'
+                >>> db.session.add(u)
+                >>> db.session.commit()
+
+In questo modo creo un nuovo utente in grado di scrivere nuovi posts.
+
+## Costruire l'interfaccia per la creazione di nuovi posts
+

@@ -3,10 +3,20 @@
 from datetime import datetime
 from blog import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from blog import login_manager
+from flask_login import UserMixin
+
+
+
+# funzione necessaria affinchè il login manager possa funzionare, così tengo traccia dell'utente connesso
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
 
 #questa classe estende db.Model e rappresenta le colonne nel nostro database
 # il campo posts e cio che viene definito campo relazionale, non sta di fatto nella tabella ma ci permette di filtrare i dati
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
