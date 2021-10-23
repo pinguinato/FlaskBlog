@@ -374,7 +374,7 @@ Es. la nuova rotta (dove passiamo come parametro l'id del singolo Post)
 
 ## Autenticazioni utenti: LOGIN e LOGOUT in Flask
 
-Si usano 2 estensio di Flask:
+Si usano 2 estensioni di Flask:
 - Flask-Login
 - Flask-WTF
 
@@ -543,4 +543,100 @@ Importiamo la nuova classe dentro il file delle rotte:
                 from blog.forms import LoginForm, PostForm
 
 Adesso non ci resta che creare una nuova view per la creazione dei posts!
+
+Inseriamo questo codice nel file **routes.py**:
+
+                @app.route('/create-post', methods=["GET", "POST"])
+                def post_create():
+                        form = PostForm()
+                        if form.validate_on_submit():
+                                new_post = Post(title=form.title.data, body=form.body.data, description=form.description.data, author=current_user)
+                                db.session.add(new_post)
+                                db.session.commit()
+                                return redirect(url_for('post_detail', post_id=new_post.id))
+                        return render_template("post_editor.html", form=form)
+
+Ricordiamoci di importare: 
+
+                from blog import db
+
+Ma non basta perché dobbiamo proteggere la nostra view in modo da essere soltanto noi amminstratori del blog a poter postare dei post, abbiamo bisogno di importare un nuovo decoratore e aggiungerlo nella rotta in questo modo:
+
+                from flask_login import login_required
+
+e poi aggiungere al decorator della rotta:
+
+                @login_required
+
+A questo punto andiamo a definire dentro **/templates** il nuovo file di template per l'editing dei post:
+
+- creiamo il file **post_editor.html** con questo codice Jinja2:
+
+
+                {% extends 'base.html' %}
+
+                {% block title %}Post Editor - CondingWiz{% endblock %}
+
+                {% block content %}
+                <div class="container content-container">
+                        <h2>Crea un nuovo Post</h2>
+                        <div class="row no-gutters">
+                                <div class="col">
+                                <form method="POST" novalidate>
+                                {{ form.hidden_tag() }} <!-- csrf token -->
+                                <div class="form-group">
+                                {{ form.title.label }}
+                                {{ form.title(class="form-control") }}
+                                        {% if form.title.errors %}
+                                                {% for error in for.title.errors %}
+                                                <span class="text-danger">{{ error }}</span>
+                                        <br>
+                                        {% endfor %}
+                                        {% endif %}
+                                </div>
+                                <div class="form-group">
+                                {{ form.description.label }}
+                                {{ form.description(class="form-control") }}
+                                        {% if form.description.errors %}
+                                        {% for error in for.description.errors %}
+                                                <span class="text-danger">{{ error }}</span>
+                                        <br>
+                                        {% endfor %}
+                                        {% endif %}
+                                </div>
+                        <div class="form-group">
+                        {{ form.body.label }}
+                        {{ form.body(class="form-control", rows=15) }}
+                        {% if form.body.errors %}
+                        {% for error in for.body.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                            <br>
+                        {% endfor %}    
+                        {% endif %}
+                        </div>
+                        <hr>
+                        {{ form.submit(class="btn btn-sm btn-outline-secondary") }}
+                        </form>
+                </div>
+                </div>    
+                </div>
+                {% endblock %}
+
+**Importante**
+
+Ricordarsi di mettere il 
+
+                {{ form.hidden_tag() }} <!-- csrf token -->
+
+altrimenti non funziona la creazione dei post!!!
+
+Adesso aggiungiamo la voce di menu per l'inserimento di nuovi posts:
+
+- dentro **base.html**
+
+                {% if current_user.is_authenticated %}
+                    <a class="nav-link" href="{{ url_for('post_create') }}">Crea Post</a>
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                {% endif %}
+
 

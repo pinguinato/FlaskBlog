@@ -1,6 +1,6 @@
-from blog import app
+from blog import app, db
 from flask import render_template, redirect, flash, url_for
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from blog.models import Post, User
 from blog.forms import LoginForm, PostForm
 
@@ -44,3 +44,16 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('homepage'))
+
+
+@app.route('/create-post', methods=["GET", "POST"])
+@login_required
+def post_create():
+    form = PostForm()
+    if form.validate_on_submit():
+        new_post = Post(title=form.title.data, body=form.body.data, description=form.description.data, author=current_user)
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect(url_for('post_details', post_id=new_post.id))
+    return render_template("post_editor.html", form=form)
+
