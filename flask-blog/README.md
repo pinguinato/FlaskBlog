@@ -639,4 +639,15 @@ Adesso aggiungiamo la voce di menu per l'inserimento di nuovi posts:
                     <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 {% endif %}
 
+## Fix degli errori del form di Login
 
+Andiamo ad aggiungere questo pezzo di codice dentro il template della login:
+
+                        ...
+                        {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                            <br>
+                        {% endfor %}
+                        {% endif %}
+                        ...
