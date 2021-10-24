@@ -651,3 +651,11 @@ Andiamo ad aggiungere questo pezzo di codice dentro il template della login:
                         {% endfor %}
                         {% endif %}
                         ...
+
+## Installazione di Flask Misaka per la gestione del markdown nei nostri Post
+
+                        pip install flask-misaka
+
+**Importante**
+
+Richiede l'installazione aggiuntiva del pacchetto Visual C++ 2014 o superiore, altrimenti Misaka non si installa!!
