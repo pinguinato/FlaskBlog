@@ -659,3 +659,73 @@ Andiamo ad aggiungere questo pezzo di codice dentro il template della login:
 **Importante**
 
 Richiede l'installazione aggiuntiva del pacchetto Visual C++ 2014 o superiore, altrimenti Misaka non si installa!!
+
+## Implementazione delle funzionalità di aggiornamento dei post (update)
+
+Dobbiamo importare 2 nuove funzioni all'interno del file **routes.py**:
+- la funzione request
+- la funzione abort
+
+quindi:
+
+                from flask import abort, request
+
+Poi dobbiamo creare una nuova view, sempre nello stesso file:
+
+                @app.route('/posts/<int:post_id>/update', methods=["GET", "POST"])
+                @login_required
+                def post_update(post_id):
+                        pass
+
+Ricordiamo che per aggiornareu n post abbiamo bisogno della sua chiave primaria quindi:
+
+                /posts/<int:post_id>/update
+
+Usiamo questo per recuperarci dal db il Post che dobbiamo aggiornare:
+
+                post_instance = Post.query.get_or_404(post_id)
+
+Aggiungiamo un ulteriore livello di sicurezza inserendo un controllo che se non è l'autore del post ti becchi un errore 403:
+
+                if post_instance.author != current_user:
+                        abort(403)
+
+La funzione blocchera la richiesta mostrandoci una pagina di errore.
+
+                @app.route('/posts/<int:post_id>/update', methods=["GET", "POST"])
+                @login_required
+                def post_update(post_id):
+                        post_instance = Post.query.get_or_404(post_id)
+                        if post_instance.author != current_user:
+                                abort(403)
+                        form = PostForm()
+                        if form.validate_on_submit():
+                                post_instance.title = form.title.data
+                                post_instance.description = form.description.data
+                                post_instance.body = form.body.data
+                                db.session.commit()
+                                return redirect(url_for('post_details', post_id=post_instance.id))
+                        elif request.method == "GET":
+                                form.title.data = post_instance.title
+                                form.description.data = post_instance.description
+                                form.body.data = post_instance.body
+                        return render_template("post_editor.html", form=form)
+
+Aggiungere la possibilità di aggiornamento:
+
+                {% if current_user.is_authenticated and current_user == post.author %}
+                    <a class="btn btn-sm btn-outline-success" href="{{url_for('post_update', post_id=post.id)}}">Aggiorna</a>
+                {% endif %}
+
+## Implementazione della funzionalità di cancellamento dei posts
+
+
+
+
+
+
+
+
+
+
+
