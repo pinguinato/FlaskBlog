@@ -719,9 +719,38 @@ Aggiungere la possibilità di aggiornamento:
 
 ## Implementazione della funzionalità di cancellamento dei posts
 
+Dobbiamo creare una nuova view che ci permetta di cancellare cose dal database. Sarà una view molto simile alla post di update.
+
+Accetteremo per questa rotta soltanto richieste di tipo POST perchè non abbiamo nulla da mostrare.
+
+Esempio:
+
+                @app.route('/posts/<int:post_id>/delete', methods=["POST"])
+                @login_required
+                def post_delete(post_id):
+                        post_instance = Post.query.get_or_404(post_id)
+                        if post_instance.author != current_user:
+                                abort(403)
+                        db.session.delete(post_instance)
+                        db.session.commit()
+                        return redirect(url_for('homepage'))
+
+E poi in **post_detail.html** inseriamo una modale Boostrap per permettere la cancellazione, però quello che andiamo a fare in realtà è prenderci il codice della modale Boostrap da qui: https://getbootstrap.com/docs/4.5/components/modal/ e poi andiamo a creare un nuovo template .html dentro la cartella /templates e questo file 
+**post_delete_modal.html** sarà il contenitore della nostra modale di cancellazione.
+
+Esempio: vedi file **post_delete_modal.html**
+
+Poi bisogna richiamare la modale in **post_details.html** in questo modo:
 
 
+                {% include "post_delete_modal.html" %}
 
+E aggiungere il pulsante di cancellazione dei Post:
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deletePostModal">
+                    Cancella
+                </button>
 
 
 

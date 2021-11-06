@@ -14,6 +14,10 @@
                 {% if current_user.is_authenticated and current_user == post.author %}
                     <a class="btn btn-sm btn-outline-success" href="{{url_for('post_update', post_id=post.id)}}">Aggiorna</a>
                 {% endif %}
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deletePostModal">
+                    Cancella
+                </button>
                 <p>
                     {{ post.body }}
                 </p>
@@ -28,5 +32,7 @@
     {% if boolean_flag %}
         <p>Boolean Flag: True</p>
     {% endif %}
-</div>    
+</div> 
+
+{% include "post_delete_modal.html" %}
 {% endblock %}
