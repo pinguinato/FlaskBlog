@@ -752,6 +752,89 @@ E aggiungere il pulsante di cancellazione dei Post:
                     Cancella
                 </button>
 
+## Ottimizzazione SEO, aggiunta del campo slug
+
+Al momento per come abbiamo configurato i link del nostro blog, purtroppo non sono esplicativi, nel senso che viene passato l'id e questo non 
+è come un titolo, quindi non è parlante e il SEO ne risente sicuramente.
+
+Andiamo quindi a modificare il modello Post, aggiungendo il campo slug basato sul titolo del nostro post, in modo che il link diventi più parlante e riconoscibile. Con il termine slug di solito si indica una stringa di caratteri alfanumerici, a cui vengono tolti i caratteri di spazi bianchi tra le parole, sostituiti con dei trattini in modo che possa generare un vero URL, che verrà tenuto in considerazione dai motori di ricerca come Google.
+
+- Modifichiamo il **models.py**
+- Modifichiamo la **routes.py**
+
+Abbiamo bisogno di alcune funzioni del file **utils.py** in grado di trasformare il titolo di un campo in un url.
+
+Es.
+
+1) Modifica del modello Post: andiamo ad aggiungere questo campo in più e rifacciamo le migrazioni
+
+Nel file dei modelli dentro la classe Post aggiungo:
+
+                slug = db.Column(db.String(255))
+
+Poi apro un terminale e digito il seguente comando per ripetere le migrations:
+
+                flask db migrate
+
+Si può osservare intanto che è stato generato un nuovo file delle migrazioni.
+
+E poi digitiamo subito dopo:
+
+                flask db upgrade
+
+Per applicare il cambiamento. Adesso intanto andiamo a generare uno slug per tutti i nostri Posts che sono già 
+in database, quindi devo aprire la flask shell. Quindi:
+
+                flask shell
+
+E andiamo a fare la import delle clasis che ci servono.
+
+                >>> from blog.utils import title_slugifier
+                >>> for post in Post.query.all():
+                ...     post.slug = title_slugifier(post.title)
+                ...     db.session.commit()
+
+E ne visualizziamo il risultato a database della nostra modifica:
+
+                for post in Post.query.all():
+                        post.slug
+
+                '- --vm5wdb'
+                '- - - --6dpwet'
+                '- - - --qjebs4'
+                '- - - --1a0sl2'
+
+Adesso bisogna modificare in tutti i punti il file delle rotte e il template della homepage.html:
+
+In homespage.html:
+
+                <a class="custom-link" href="{{ url_for('post_details', post_id=post.id) }}">
+                <a class="custom-link" href="{{ url_for('post_details', post_slug=post.slug) }}">
+
+alla dicitura post_id sostituire post_slug.
+
+Nel file delle rotte implemtnare i seguenti cambiamenti:
+
+IMportare nel file delle rotte:
+
+                from blog.utils import title_slugifier
+
+La chiamata del dettaglio del post:
+
+                @app.route('/posts/<string:post_slug>')
+                def post_details(post_slug):
+                        post_instance = Post.query.filter_by(slug=post_slug).first_or_404()
+
+La creazione del post:
+
+                slug = title_slugifier(form.title.data)
+                new_post = Post(title=form.title.data, body=form.body.data, slug=slug, description=form.description.data, author=current_user)
+
+                return redirect(url_for('post_details', post_slug=slug))
+
+L'aggiornamento del post:
+
+                return redirect(url_for('post_details', post_slug=post_instance.slug))
 
 
 

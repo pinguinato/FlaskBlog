@@ -47,6 +47,7 @@ class Post(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255))
     body = db.Column(db.Text(), nullable=False)
+    slug = db.Column(db.String(255))
 
 
     def __repr__(self):
