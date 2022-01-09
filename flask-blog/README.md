@@ -837,6 +837,111 @@ L'aggiornamento del post:
                 return redirect(url_for('post_details', post_slug=post_instance.slug))
 
 
+## Includere delle immagini e farne l'upload in Flask
+
+La prima cosa che dobbiamo fare innanzitutto è andare a modificare il nostro modello aggiungendo un nuovo campo per ospitare le immagini.
+
+Delle immagini salviamo **il nome** non l'immagine vera e propria, questa verrà preservata in una cartella del sistema, ma a database andremo a salvare soltanto il nome di questa. Questo meccanismo ci serve per recuperarla poi dal disco. L'immagine sarà salvata all'interno di una sottocartella dentro **/static**.
+
+Quindi aggiungere questa riga di codice alla classe del nostro modello **Post**:
+
+                image = db.Column(db.String(120))
+
+Quindi rilanciamo di nuovo le migration per aggiornare la situazione a livello di database.
+
+                flask db migrate -m "Aggiunta campo immagine"
+
+E poi:
+
+                flask db upgrade
+
+Possiamo chiudere il nostro terminale e andare ad aggiungere una nuova varibile globale nel nostro file di configurazione **config.py**:
+
+                UPLOAD_FOLDER = "static/img/posts"
+
+Qui sarà la locazione dove verrano salvate le immagini che caricheremo nei nostri posts.
+
+A questo punto creo fisicamente la nuova location.
+
+Inoltre ricordo che è necessario modificare la rotta di creazione e di update dei posts, per andare ad ispezionare il campo image per vedere se ci sono dei cambiamenti in merito. Ma intanto per fare questo andiamo a definire una nuova funzione all'interno del file **utils.py**.
+
+Dentro utils.py:
+                
+                import os
+
+                from flask import current_app
+                from blog import app
+
+                UPLOAD_FOLDER = app.config['UPLOAD_FOLDER']
+
+In modo da dire a Flask dove caricare le immagini.
+
+Dobbiamo inoltre installare il package **pillow**, che è una libreria python per la gestione delle immagini.
+
+                pip install pillow
+
+e aggiorniamo il file dei requirements:
+
+                pip freeze > requirements.txt
+
+e sempre in **utils.py** importiamo il pacchetto image:
+
+                from PIL import Image
+
+e poi definire questa nuova funzione per il salvataggio dell'immagine:
+
+                def save_picture(form_data):
+                        filename = form_data.filename
+                        picture_name = generate_random_string() + "-" + filename
+                        picture_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, picture_name) 
+                        image = Image.open(form_data)
+                        image.save(picture_path)
+                        return picture_name
+
+Ricordiamoci di importare anche la nuova funzione dentro il file delle rotte:
+
+                from blog.utils import title_slugifier, save_picture
+
+E poi di modificare all'occasione anche **forms.py**:
+
+                from flask_wtf.file import FileField, FileAllowed
+
+                image = FileField('Copertina Articolo', validators=[FileAllowed['jpg', 'jpeg', 'png']])
+
+Questo perché così nel nostro form di creazione/update di un Post siamo in grado di avere un campo immagine, che accetta solo 3 precisi formati di mmagine che gli diciamo noi quali devono essere.
+
+Ora passiamo a modificare le rotte di creazione e aggiornamento di un Post:
+
+Nel  codice della create post:
+
+                if form.image.data:
+                        try:
+                                image = save_picture(form.image.data)
+                                new_post.image = image
+                        except Exception:
+                                db.session.add(new_post)
+                                db.session.commit()
+                                flash("C'è stato un problema con l'upload dell'immagine, cambia immagine e riprova.")
+                                return redirect(url_for('post_update', post_id=new_post.id))
+
+Aggiorniamo anche la **post_detail.html**:
+
+                {% if post.image %}
+                <div>
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/posts/' + post.image) }}" alt="">
+                </div>
+                {% endif %}
+
+E modificare anche **post_editor.html**:
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
+from wtforms import validators
 from wtforms.validators import DataRequired, Length
 
 class LoginForm(FlaskForm):
@@ -13,4 +15,5 @@ class PostForm(FlaskForm):
     title = StringField('Titolo', validators=[DataRequired("Campo Obbligatorio!"), Length(min=3, max=120, message="Assicurati che il titolo abbia tra i 3 e i 120 caratteri")])
     description = TextAreaField('Descrizione', validators=[Length(max=240, message="Assicurati che la descrizione abbia al massimo 240 caratteri")])
     body = TextAreaField('Contenuto', validators=[DataRequired("Campo Obbligatorio!")])
+    image = FileField('Copertina Articolo', validators=[FileAllowed(['png', 'jpg'])])
     submit = SubmitField('Pubblica Post')
