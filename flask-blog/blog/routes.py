@@ -8,7 +8,6 @@ from blog.utils import title_slugifier, save_picture
 
 
 @app.route('/')
-@app.route('/posts')
 def homepage():
     # i post sono ordinati per data di creazione decrescente  
     posts = Post.query.order_by(Post.created_at.desc()).all()
