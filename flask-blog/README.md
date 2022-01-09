@@ -932,9 +932,38 @@ Aggiorniamo anche la **post_detail.html**:
                 </div>
                 {% endif %}
 
+Nota: la classe Boostrap class="img-fluid" ci permette di responsivizzare automagicamente l'immagine del Post.
+
 E modificare anche **post_editor.html**:
 
 
+Aggiungiamo questo codice: 
+
+                        <div class="form-group">
+                        {{ form.image.label }}
+                                {{ form.image(class="form-control-file") }}
+                                {% if form.image.errors %}
+                                {% for error in form.image.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                                <br>
+                                {% endfor %}
+                        {% endif %}
+                        </div>
+
+
+                        <div class="mb-3">
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        {% for message in messages %}
+                            <p style="color: #dc3545;">{{ message }}</p>
+                        {% endfor %}
+                        {% endif%}
+                        {% endwith %}
+                        </div>
+
+                        <form method="POST" enctype="multipart/form-data" novalidate>
+
+Il form deve essere **multipart/form-data** per poter gestire l'upload delle immagini.
 
 
 
