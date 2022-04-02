@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Contact Me.{% endblock %}
+{% block content %}
+
+<div class="container content-container">
+    
+    <div class="row no-gutters">
+        <div class="col-md-9 order-md-2">
+            <div class="about-page-block">
+                <p class="lead">Contattami</p>
+                <p>Puoi contattarmi al mio indirizzo email o tramite i miei canali social:</p>
+                <hr>
+                <p>Email: <a href="mailto:gianottoroberto@gmail.com" class="custom-link">gianottoroberto@gmail.com</a></p>
+                <p>Facebook: <a href="#" class="custom-link">Facebook</a></p>
+                <p>Instagram: <a href="#" class="custom-link">Instagram</a></p>
+                <p>Twitter: <a href="#" class="custom-link">Twitter</a></p>
+                <hr>
+                <a class="btn btn-sm btn-outline-secondary" href="{{url_for('about_page')}}">About Me.</a>
+            </div>
+        </div>
+    
+        <div class="col-md-3 order-md-1">
+            {% include "about_me_snippet.html" %}
+        </div>
+    </div>
+    
+    {% if boolean_flag %}
+        <p>Boolean Flag: True</p>
+    {% endif %}
+</div>    
+{% endblock %}

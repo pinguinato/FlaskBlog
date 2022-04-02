@@ -37,6 +37,11 @@ def about_page():
     return render_template("about_page.html")
 
 
+@app.route('/contact')
+def contact_page():
+    return render_template("contact_page.html")
+
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:

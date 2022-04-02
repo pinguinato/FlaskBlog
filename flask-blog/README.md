@@ -1125,7 +1125,20 @@ Passi per implementare la paginazione:
                                  margin-left: 30px;
                         }
 
- 
+
+## Implementazione della pagina dei Contatti
+
+1) Creare una nuova rotta dentro **routes.py**:
+
+                @app.route('/contact')
+                def contact_page():
+                        return render_template("contact_page.html")
+
+2) Creare il nuovo file html **contact_page.html** che ha un template del tutto identico ad **about_page.html**
+
+3) Sistemazione dei link per la pagina dei contatti.
+
+
 
 
 
