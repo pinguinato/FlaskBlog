@@ -30,3 +30,4 @@ with app.app_context():
 # è molto importante scrivere qui al fondo questo import per prevenire errore di Circular Import
 from blog import models
 from blog import routes
+from blog import errors

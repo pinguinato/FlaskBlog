@@ -1138,7 +1138,15 @@ Passi per implementare la paginazione:
 
 3) Sistemazione dei link per la pagina dei contatti.
 
+## Gestione degli errori
 
+Creiamo un nuovo file **errors.py**
+
+Creaiamo i templati html per le pagine **404** e **401**
+
+Importiamo il file degli errori dentro **__init__.py**:
+
+                from blog import errors
 
 
 
