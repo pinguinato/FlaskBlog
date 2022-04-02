@@ -1074,6 +1074,58 @@ e nal css del blog:
                 post_image = post_instance.image or None
                 return render_template("post_editor.html", form=form, post_image=post_image)
 
+## Paginazione dei Post
+
+Passi per implementare la paginazione:
+
+- Modifica della query che estrae i record: dal metodo **all()** si passa al **paginate()** e modifiche al codice in modo da ospitare i parametri della paginazione
+
+                @app.route('/')
+                def homepage():
+                # i post sono ordinati per data di creazione decrescente 
+                        page_number = request.args.get('page', 1, type=int) 
+                        posts = Post.query.order_by(Post.created_at.desc()).paginate(page_number, 3, True)
+
+                if posts.has_next:
+                    next_page = url_for('homepage', page=posts.next_num)
+                else:
+                    next_page = None
+
+                if posts.has_prev:
+                    previous_page = url_for('homepage', page=posts.prev_num)
+                else:
+                    previous_page = None
+
+                return render_template("homepage.html", posts=posts, current_page=page_number, next_page=next_page, previous_page=previous_page)
+
+- Aggiunta di un DIV che ospiti la paginazione nella pagina homepage.html:
+
+                <div class="pagination-block">
+                {% if previous_page %}
+                        {% if current_page == 2 %}
+                                <a class="btn btn-sm btn-outline-secondary" href="/">Indietro</a>
+                        {% else %}
+                                <a class="btn btn-sm btn-outline-secondary" href="{{ previous_page }}">Indietro</a>
+                        {% endif %}
+                {% endif %}
+                {% if next_page %}
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ next_page }}">Avanti</a>
+                {% endif %}
+                </div>
+
+- Stilizzazione lato CSS:
+
+                .pagination-block {
+                         margin-bottom:30px;
+                }
+
+                aggiungere anche alla media query questa sintassi:
+
+                        .pagination-block {
+                                 margin-left: 30px;
+                        }
+
+ 
 
 
 
