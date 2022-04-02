@@ -965,6 +965,115 @@ Aggiungiamo questo codice:
 
 Il form deve essere **multipart/form-data** per poter gestire l'upload delle immagini.
 
+## Rifinitura degli aspetti grafici di insieme
+
+1) Settare l'URL dell'home page:
+
+                <a class="navbar-brand" href="{{ url_for('homepage') }}">CodingWiz</a>
+
+2) Settare la classe "active" sugli url del menù:
+
+                <div class="navbar-nav ml-auto">
+                        <a class="nav-item nav-link
+                        {% if request.path == '/' %} 
+                        active 
+                        {% endif %}" 
+                        ....>...
+
+3) Modifica della classe "nav-link":
+
+                @media (min-width: 768px) {
+                        .nav-link {
+                                padding-right: 0px !important;
+                                padding-left: 1rem !important;
+                        }
+                }
+
+4) Modifica di about_me_snippet.html:
+
+                <div class="about-snippet-block text-center">
+                        <img class="img-fluid" width="150" alt="artificial intelligence" src="{{ url_for('static', filename='img/ai.png') }}">
+                        <div class="mt-3">
+                                <p class="p-small-one">Ridiculus vulputate rhoncus potenti platea, dapibus nunc amet.</p>
+                                <p class="p-small-one">Ridiculus vulputate rhoncus potenti platea, dapibus nunc amet.</p>
+                                <p class="p-small-one">Ridiculus vulputate rhoncus potenti platea, dapibus nunc amet.</p>
+                                <hr>
+                                <p class="p-small-one text-muted">Eleifend maecenas platea montes cursus inceptos, dictumst neque pretium.</p>
+                                <p class="p-small-one text-muted">Eleifend maecenas platea montes cursus inceptos, dictumst neque pretium.</p>
+                        </div>    
+                </div>
+
+5) Sistemazione dell'area dei Posts:
+
+dentro il file post_details.html:
+
+                {% if post.image %}
+                <div class="post-image-block">
+                    <img class="img-fluid post-image" src="{{ url_for('static', filename='img/posts/' + post.image) }}" alt="">
+                </div>
+                <div class="post-page-block no-border-top">
+                {% else %}    
+                <div class="post-page-block">
+                {% endif %}
+
+e nal css del blog:
+
+                .no-border-top {
+                        border-top: 0;
+                        border-top-left-radius: 0;
+                        border-top-right-radius: 0;
+                }
+
+                .post-image {
+                        border: 1px solid #d3d3d3;
+                        border-top-left-radius: 5px;
+                        border-top-right-radius: 5px;
+                }
+
+                aggiungere:
+
+                .post-image-block {
+                        margin-left: 30px;
+                } 
+
+                dentro la media query: @media (min-width: 768px) { ...
+
+6) Aggiunta di un READ MORE all'elenco dei posts:
+
+                <a class="read-more" href="{{ url_for('post_details', post_slug=post.slug) }}">Leggi articolo</a>
+
+                .read-more {
+                        color: #6c757d;
+                        text-decoration: none;
+                }
+
+                .read-more:hover {
+                        color: #343a40 !important;
+                }
+
+7) Aggiunta tasto di ritorno alla homepage in tutti i posts, aprire post_details.html e sotto la sezione del body inserire:
+
+                <a class="btn btn-sm btn-outline-secondary" href="{{url_for('homepage')}}">Tutti i post</a>
+
+8) Sistemazione area di aggiornamento del post:
+
+                nel file pot_editor.html modificare in alto la sezione container in questo modo:
+
+                <div class="container content-container mt-3 px-3 px-lg-0">
+
+                in modo da aggiungere dello spazio ai margini in visualizzazione mobile.
+
+9) Inserimento immagine in aggiornamento del post:
+
+                {% if post_image  %}
+                        <img class="img-fluid mb-3" src="{{ url_for( 'static', filename='img/posts/' + post_image )}}" alt="">
+                {% endif%}
+
+                modifica della rotta di update del post:
+
+                post_image = post_instance.image or None
+                return render_template("post_editor.html", form=form, post_image=post_image)
+
 
 
 
